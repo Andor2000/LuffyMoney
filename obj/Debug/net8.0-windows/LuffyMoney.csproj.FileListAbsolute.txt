@@ -1,0 +1,16 @@
+D:\Project\LuffyMoney\bin\Debug\net8.0-windows\LuffyMoney.exe
+D:\Project\LuffyMoney\bin\Debug\net8.0-windows\LuffyMoney.deps.json
+D:\Project\LuffyMoney\bin\Debug\net8.0-windows\LuffyMoney.runtimeconfig.json
+D:\Project\LuffyMoney\bin\Debug\net8.0-windows\LuffyMoney.dll
+D:\Project\LuffyMoney\bin\Debug\net8.0-windows\LuffyMoney.pdb
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.Form1.resources
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.csproj.GenerateResource.cache
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.GeneratedMSBuildEditorConfig.editorconfig
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.AssemblyInfoInputs.cache
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.AssemblyInfo.cs
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.csproj.CoreCompileInputs.cache
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.dll
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\refint\LuffyMoney.dll
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.pdb
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\LuffyMoney.genruntimeconfig.cache
+D:\Project\LuffyMoney\obj\Debug\net8.0-windows\ref\LuffyMoney.dll
