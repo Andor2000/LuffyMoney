@@ -8,23 +8,23 @@
     "net8.0-windows7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\AOrehov\\.nuget\\packages\\": {},
+    "C:\\Users\\Арина\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\LuffyMoney\\LuffyMoney.csproj",
+      "projectUniqueName": "C:\\git-rep\\LuffyMoney\\LuffyMoney.csproj",
       "projectName": "LuffyMoney",
-      "projectPath": "D:\\Project\\LuffyMoney\\LuffyMoney.csproj",
-      "packagesPath": "C:\\Users\\AOrehov\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\LuffyMoney\\obj\\",
+      "projectPath": "C:\\git-rep\\LuffyMoney\\LuffyMoney.csproj",
+      "packagesPath": "C:\\Users\\Арина\\.nuget\\packages\\",
+      "outputPath": "C:\\git-rep\\LuffyMoney\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\AOrehov\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Арина\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -49,9 +49,9 @@
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
-        "auditMode": "direct"
+        "auditMode": "all"
       },
-      "SdkAnalysisLevel": "9.0.200"
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net8.0-windows7.0": {
@@ -75,7 +75,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

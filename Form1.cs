@@ -1,5 +1,6 @@
 using LuffyMoney.Extensions;
 using LuffyMoney.Models;
+using System.Windows.Forms;
 
 namespace LuffyMoney
 {
@@ -11,25 +12,30 @@ namespace LuffyMoney
 
         public Form1()
         {
-            InitializeComponent();
-            LoadPlayers();
-            InitializeUI();
+            this.InitializeComponent();
+            this.LoadPlayers();
+            this.InitializeUI();
         }
 
         private void InitializeUI()
         {
-            LoadPlayersInMainGris(_playerList);
+            this.LoadPlayersInMainGris(this._playerList);
         }
 
         private void LoadPlayers()
         {
             // Загружаем игроков (примерные данные)
-            _playerList = new List<Player>
+            this._playerList = new List<Player>
             {
                 new Player { Id = 1, Nick = "Игрок1", BuyGold = 1000000, SpentChM = 500, AvailableChm = 2000 },
                 new Player { Id = 2, Nick = "Игрок2", BuyGold = 2000000, SpentChM = 1000, AvailableChm = 3000 },
                 new Player { Id = 3, Nick = "Игрок3", BuyGold = 500000, SpentChM = 300, AvailableChm = 1500 }
             };
+
+            this.bindingSource1.DataSource = this._playerList;
+            this.SetComboBox(this.comboBox1);
+            this.SetComboBox(this.comboBox2);
+            this.SetComboBox(this.comboBox3);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -104,20 +110,52 @@ namespace LuffyMoney
                 return;
             }
 
-            var player = _playerList.FirstOrDefault(x => x.Nick.ToLower(System.Globalization.CultureInfo.CurrentCulture) == nick.ToLower());
-            if ((player?.Id).IsNullOrDefault())
-            {
-                MessageBox.Show("Игрок не найден");
-            }
-
-            if (_historyList.Any(x => x.PlayerId == player.Id))
-            {
-                MessageBox.Show("Сначала нужно удалить сторию игрока");
-            }
+            var player = _playerList.FirstOrDefault(x => x.Nick.ToLower(System.Globalization.CultureInfo.CurrentCulture) == nick.ToLower())
+                .ThrowOnCondition(x => (x?.Id).IsNullOrDefault(), "Игрок не найден")
+                .ThrowOnCondition(x => _historyList.Any(y => y.PlayerId == x.Id), "Сначала нужно удалить сторию игрока");
 
             // todo
             _playerList.Remove(player!);
+            MessageBox.Show("Игрок успешно удален");
+            textBox2.Text = string.Empty;
             UpdateMainGrid();
+        }
+
+
+        private void SetComboBox(ComboBox cb)
+        {
+            cb.DataSource = bindingSource1;
+            cb.DisplayMember = "Nick";
+            cb.ValueMember = "Id";
+            cb.DropDownStyle = ComboBoxStyle.DropDown;
+        }
+
+        private void comboBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            var cb = sender as ComboBox;
+            if (cb == null) return;
+
+            // Сохраняем текущий текст и позицию курсора
+            string currentText = cb.Text;
+            int selectionStart = cb.SelectionStart;
+
+            // Фильтруем список на основе currentText
+
+            var filteredPlayers = string.IsNullOrEmpty(currentText)
+                ? _playerList
+                : _playerList.Where(p => p.Nick.Contains(currentText)).ToList();
+
+            bindingSource1.DataSource = !filteredPlayers.IsNullOrDefault() 
+                ? filteredPlayers
+                : new List<Player> { new Player { } };
+
+            // Восстанавливаем текст и позицию курсора
+            cb.Text = currentText;
+            cb.SelectionStart = selectionStart;
+            cb.SelectionLength = 0;
+
+            // Открываем выпадающий список, если есть совпадения
+            cb.DroppedDown = !filteredPlayers.IsNullOrDefault();
         }
     }
 }

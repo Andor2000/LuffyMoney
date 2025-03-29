@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LuffyMoney")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc3ce49735e0e229acb61b9254161e0f9a21b94a")]
 [assembly: System.Reflection.AssemblyProductAttribute("LuffyMoney")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LuffyMoney")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
