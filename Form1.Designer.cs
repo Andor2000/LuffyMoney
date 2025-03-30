@@ -44,6 +44,7 @@
             textBox2 = new TextBox();
             label2 = new Label();
             tabPage3 = new TabPage();
+            label15 = new Label();
             label9 = new Label();
             button3 = new Button();
             textBox3 = new TextBox();
@@ -250,6 +251,7 @@
             // 
             // tabPage3
             // 
+            tabPage3.Controls.Add(label15);
             tabPage3.Controls.Add(label9);
             tabPage3.Controls.Add(button3);
             tabPage3.Controls.Add(textBox3);
@@ -263,6 +265,15 @@
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Покупка голды";
             tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Location = new Point(229, 203);
+            label15.Name = "label15";
+            label15.Size = new Size(131, 20);
+            label15.TabIndex = 6;
+            label15.Text = "Прибавится чм: 0";
             // 
             // label9
             // 
@@ -282,6 +293,7 @@
             button3.TabIndex = 4;
             button3.Text = "Сохранить";
             button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
             // 
             // textBox3
             // 
@@ -291,6 +303,9 @@
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(233, 39);
             textBox3.TabIndex = 3;
+            textBox3.KeyDown += textBox3_KeyDown;
+            textBox3.KeyPress += textBox3_KeyPress;
+            textBox3.KeyUp += textBox3_KeyUp;
             // 
             // label4
             // 
@@ -341,7 +356,7 @@
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new Point(246, 228);
+            label11.Location = new Point(242, 218);
             label11.Name = "label11";
             label11.Size = new Size(129, 20);
             label11.TabIndex = 11;
@@ -374,6 +389,8 @@
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(233, 39);
             textBox4.TabIndex = 8;
+            textBox4.KeyDown += textBox3_KeyDown;
+            textBox4.KeyPress += textBox3_KeyPress;
             // 
             // label5
             // 
@@ -497,7 +514,7 @@
             // Column9
             // 
             Column9.Frozen = true;
-            Column9.HeaderText = "Получено чм";
+            Column9.HeaderText = "Приход/Расход ЧМ";
             Column9.MinimumWidth = 6;
             Column9.Name = "Column9";
             Column9.ReadOnly = true;
@@ -580,6 +597,8 @@
             textBox6.Size = new Size(233, 39);
             textBox6.TabIndex = 14;
             textBox6.Text = "58";
+            textBox6.KeyDown += textBox3_KeyDown;
+            textBox6.KeyPress += textBox3_KeyPress;
             // 
             // label8
             // 
@@ -599,6 +618,7 @@
             button5.TabIndex = 12;
             button5.Text = "Сохранить";
             button5.UseVisualStyleBackColor = true;
+            button5.Click += button5_Click;
             // 
             // textBox5
             // 
@@ -609,6 +629,7 @@
             textBox5.Size = new Size(233, 39);
             textBox5.TabIndex = 11;
             textBox5.Text = "2";
+            textBox5.KeyPress += textBox5_KeyPress;
             // 
             // label7
             // 
@@ -695,11 +716,12 @@
         private DataGridViewTextBoxColumn Column4;
         private TextBox textBox8;
         private Label label14;
+        private BindingSource bindingSource1;
         private DataGridViewTextBoxColumn Column5;
         private DataGridViewTextBoxColumn Column6;
         private DataGridViewTextBoxColumn Column7;
         private DataGridViewTextBoxColumn Column8;
         private DataGridViewTextBoxColumn Column9;
-        private BindingSource bindingSource1;
+        private Label label15;
     }
 }

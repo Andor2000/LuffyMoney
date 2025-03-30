@@ -18,6 +18,7 @@
             if (predicate.Invoke(obj))
             {
                 MessageBox.Show(message, "Ошибка");
+                return default;
             }
 
             return obj;

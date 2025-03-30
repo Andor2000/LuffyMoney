@@ -1,6 +1,6 @@
 using LuffyMoney.Extensions;
 using LuffyMoney.Models;
-using System.Windows.Forms;
+using System.Globalization;
 
 namespace LuffyMoney
 {
@@ -9,6 +9,11 @@ namespace LuffyMoney
         private List<Player> _playerList = new List<Player>();
         private List<History> _historyList = new List<History>();
 
+        private static double CursRub;
+
+        private static int CursChm;
+
+        public int l, n;
 
         public Form1()
         {
@@ -20,6 +25,14 @@ namespace LuffyMoney
         private void InitializeUI()
         {
             this.LoadPlayersInMainGris(this._playerList);
+            this.LoadHistoryGris();
+            CursRub = 2;
+            CursChm = 58;
+
+            textBox5.Text = CursRub.ToString();
+            textBox6.Text = CursChm.ToString();
+            this.UpdateLabelCurs(label9);
+            this.UpdateLabelCurs(label10);
         }
 
         private void LoadPlayers()
@@ -69,11 +82,31 @@ namespace LuffyMoney
                 // Добавляем новую строку в таблицу
                 int rowIndex = dataGridView1.Rows.Add();
 
+                // .ToString("N0"); // "1,000,000"
                 // Заполняем ячейки данных для этой строки
                 dataGridView1.Rows[rowIndex].Cells[0].Value = player.Nick;          // Ник
-                dataGridView1.Rows[rowIndex].Cells[1].Value = player.BuyGold;       // Куплено голды
-                dataGridView1.Rows[rowIndex].Cells[2].Value = player.SpentChM;      // Потрачено чм
-                dataGridView1.Rows[rowIndex].Cells[3].Value = player.AvailableChm;  // Доступно чм
+                dataGridView1.Rows[rowIndex].Cells[1].Value = player.BuyGold.ToString("N0");         // Куплено голды
+                dataGridView1.Rows[rowIndex].Cells[2].Value = player.SpentChM.ToString("N0"); ;      // Потрачено чм
+                dataGridView1.Rows[rowIndex].Cells[3].Value = player.AvailableChm.ToString("N0"); ;  // Доступно чм
+            }
+        }
+
+        private void LoadHistoryGris()
+        {
+            dataGridView2.Rows.Clear();
+            var histories = _historyList.OrderByDescending(x => x.Date).ToList();
+
+            foreach (var history in histories)
+            {
+                int rowIndex = dataGridView2.Rows.Add();
+
+                // .ToString("N0"); // "1,000,000"
+                // Заполняем ячейки данных для этой строки
+                dataGridView2.Rows[rowIndex].Cells[0].Value = history.Player.Nick;
+                dataGridView2.Rows[rowIndex].Cells[1].Value = history.Date.ToString("yyyy-MM-dd HH:mm:ss");
+                dataGridView2.Rows[rowIndex].Cells[2].Value = history.IsBuyGold ? "Куплено голд" : "Потрачено чм";
+                dataGridView2.Rows[rowIndex].Cells[3].Value = history.Count.ToString("N0");
+                dataGridView2.Rows[rowIndex].Cells[4].Value = $"{(history.IsBuyGold ? "+" : "-")} {history.GetChM.ToString("N0")}чм";
             }
         }
 
@@ -86,7 +119,7 @@ namespace LuffyMoney
                 return;
             }
 
-            if (_playerList.Any(x => x.Nick.ToLower(System.Globalization.CultureInfo.CurrentCulture) == nick.ToLower()))
+            if (_playerList.Any(x => x.Nick.ToLower(CultureInfo.CurrentCulture) == nick.ToLower()))
             {
                 MessageBox.Show("Игрок с таким ником уже существует");
             }
@@ -145,7 +178,7 @@ namespace LuffyMoney
                 ? _playerList
                 : _playerList.Where(p => p.Nick.Contains(currentText)).ToList();
 
-            bindingSource1.DataSource = !filteredPlayers.IsNullOrDefault() 
+            bindingSource1.DataSource = !filteredPlayers.IsNullOrDefault()
                 ? filteredPlayers
                 : new List<Player> { new Player { } };
 
@@ -156,6 +189,137 @@ namespace LuffyMoney
 
             // Открываем выпадающий список, если есть совпадения
             cb.DroppedDown = !filteredPlayers.IsNullOrDefault();
+        }
+
+        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true; // Отклоняем ввод, если это не цифра и не управляющая клавиша
+            }
+        }
+
+        private void textBox3_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.V) // Проверяем Ctrl + V
+            {
+                string clipboardText = Clipboard.GetText();
+                if (!clipboardText.All(char.IsDigit)) // Если в буфере есть нецифры – отменяем вставку
+                {
+                    e.SuppressKeyPress = true;
+                }
+            }
+        }
+
+        private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Получаем символ разделителя (например, запятая для ru-RU)
+            char separator = Convert.ToChar(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+
+            // Разрешаем управляющие символы (Backspace, Delete и т.п.)
+            if (char.IsControl(e.KeyChar))
+                return;
+
+            // Если вводится цифра, проверяем, если после разделителя уже 2 символа
+            if (char.IsDigit(e.KeyChar))
+            {
+                int sepIndex = textBox5.Text.IndexOf(separator);
+                // Если разделитель найден и каретка расположена после него
+                if (sepIndex >= 0 && textBox5.SelectionStart > sepIndex)
+                {
+                    // Количество символов после разделителя
+                    string afterSep = textBox5.Text.Substring(sepIndex + 1);
+                    // Если уже введено 2 цифры (без учёта выделенного текста) — блокируем ввод
+                    if (afterSep.Length >= 2 && textBox5.SelectionLength == 0)
+                    {
+                        e.Handled = true;
+                    }
+                }
+                return;
+            }
+
+            // Если вводится точка или запятая, разрешаем ввод разделителя, но только если его ещё нет
+            if (e.KeyChar == '.' || e.KeyChar == ',')
+            {
+                if (textBox5.Text.Contains(separator.ToString()))
+                    e.Handled = true;
+                else
+                    e.KeyChar = separator; // Приводим к региональному разделителю
+                return;
+            }
+
+            // Блокируем все остальные символы
+            e.Handled = true;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            CursRub = Convert.ToDouble(textBox5.Text);
+            CursChm = Convert.ToInt32(textBox6.Text);
+            this.UpdateLabelCurs(label9);
+            this.UpdateLabelCurs(label10);
+        }
+
+        private void UpdateLabelCurs(Label l)
+        {
+            l.Text = string.Format("голд 1:{0}\nчм 1:{1}", CursRub.ToString("0.##"), CursChm);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var result = comboBox1.Text.ThrowOnCondition(x => x.IsNullOrDefault(), "Введите ник игрока");
+            if (result == null) return;
+
+            result = comboBox1.Text.ThrowOnCondition(x => !_playerList.Select(x => x.Nick.ToLower()).Contains(x.ToLower()), "Указан несуществующий игрок");
+            if (result == null) return;
+
+            result = textBox3.Text.ThrowOnCondition(string.IsNullOrWhiteSpace, "Введите число");
+            if (result == null) return;
+
+            result = textBox3.Text.ThrowOnCondition(text => !int.TryParse(text, out _), "Введите корректное число");
+            if (result == null) return;
+
+            var countGold = Convert.ToInt32(textBox3.Text);
+            var player = _playerList.First(x => x.Nick == comboBox1.Text);
+            var getCh = ChMAdded(countGold);
+            var history = new History()
+            {
+                Player = player,
+                Date = DateTime.Now,
+                IsBuyGold = true,
+                Count = countGold,
+                GetChM = getCh,
+            };
+
+            player.BuyGold += countGold;
+            player.AvailableChm += getCh;
+
+            this._historyList.Add(history);
+            textBox3.Text = string.Empty;
+            this.LoadHistoryGris();
+            this.LoadPlayersInMainGris(_playerList);
+        }
+
+        private static int ChMAdded(int valueGold)
+        {
+            return valueGold / CursChm;
+        }
+
+        private void textBox3_KeyUp(object sender, KeyEventArgs e)
+        {
+            var text = "Прибавится чм: ";
+            int value;
+
+            if (int.TryParse(textBox3.Text, out value))
+            {
+                value = ChMAdded(value);
+            }
+            else
+            {
+                value = 0;
+            }
+
+            label15.Text = text + value; // Обновляем метку
         }
     }
 }
