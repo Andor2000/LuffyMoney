@@ -33,7 +33,7 @@
         public int Count { get; set; }
 
         /// <summary>
-        /// Получено ЧМ.
+        /// Приход\расход ЧМ.
         /// </summary>
         public int GetChM { get; set; }
     }

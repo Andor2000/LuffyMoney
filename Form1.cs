@@ -33,6 +33,10 @@ namespace LuffyMoney
             textBox6.Text = CursChm.ToString();
             this.UpdateLabelCurs(label9);
             this.UpdateLabelCurs(label10);
+
+            var firstPlayer = this._playerList.FirstOrDefault(new Player());
+            comboBox2.Text = firstPlayer.Nick;
+            label11.Text = GetLabel11(firstPlayer.AvailableChm);
         }
 
         private void LoadPlayers()
@@ -84,7 +88,7 @@ namespace LuffyMoney
 
                 // .ToString("N0"); // "1,000,000"
                 // Заполняем ячейки данных для этой строки
-                dataGridView1.Rows[rowIndex].Cells[0].Value = player.Nick;          // Ник
+                dataGridView1.Rows[rowIndex].Cells[0].Value = player.Nick;                           // Ник
                 dataGridView1.Rows[rowIndex].Cells[1].Value = player.BuyGold.ToString("N0");         // Куплено голд
                 dataGridView1.Rows[rowIndex].Cells[2].Value = player.SpentChM.ToString("N0"); ;      // Потрачено чм
                 dataGridView1.Rows[rowIndex].Cells[3].Value = player.AvailableChm.ToString("N0"); ;  // Доступно чм
@@ -102,11 +106,12 @@ namespace LuffyMoney
 
                 // .ToString("N0"); // "1,000,000"
                 // Заполняем ячейки данных для этой строки
-                dataGridView2.Rows[rowIndex].Cells[0].Value = history.Player.Nick;
-                dataGridView2.Rows[rowIndex].Cells[1].Value = history.Date.ToString("yyyy-MM-dd HH:mm:ss");
-                dataGridView2.Rows[rowIndex].Cells[2].Value = history.IsBuyGold ? "Куплено голд" : "Потрачено чм";
-                dataGridView2.Rows[rowIndex].Cells[3].Value = history.Count.ToString("N0");
-                dataGridView2.Rows[rowIndex].Cells[4].Value = $"{(history.IsBuyGold ? "+" : "-")} {history.GetChM.ToString("N0")}чм";
+                dataGridView2.Rows[rowIndex].Cells[0].Value = history.Id;
+                dataGridView2.Rows[rowIndex].Cells[1].Value = history.Player.Nick;
+                dataGridView2.Rows[rowIndex].Cells[2].Value = history.Date.ToString("yyyy-MM-dd HH:mm:ss");
+                dataGridView2.Rows[rowIndex].Cells[3].Value = history.IsBuyGold ? "Куплен голд" : "Потрачено чм";
+                dataGridView2.Rows[rowIndex].Cells[4].Value = history.Count.ToString("N0");
+                dataGridView2.Rows[rowIndex].Cells[5].Value = $"{(history.IsBuyGold ? "+" : "-")} {history.GetChM.ToString("N0")}чм";
             }
         }
 
@@ -119,9 +124,12 @@ namespace LuffyMoney
                 return;
             }
 
-            if (_playerList.Any(x => x.Nick.ToLower(CultureInfo.CurrentCulture) == nick.ToLower()))
+
+            var result = _playerList.Any(x => x.Nick.ToLower(CultureInfo.CurrentCulture) == nick.ToLower())
+                .ThrowOnCondition(x => x, "Игрок с таким ником уже существует");
+            if (result)
             {
-                MessageBox.Show("Игрок с таким ником уже существует");
+                return;
             }
 
 
@@ -279,11 +287,15 @@ namespace LuffyMoney
             result = textBox3.Text.ThrowOnCondition(text => !int.TryParse(text, out _), "Введите корректное число");
             if (result == null) return;
 
+            result = textBox9.Text.ThrowOnCondition(x => x.IsNullOrDefault() || x == "0", "Укажите сколько чм добавится");
+            if (result == null) return;
+
             var countGold = Convert.ToInt32(textBox3.Text);
             var player = _playerList.First(x => x.Nick == comboBox1.Text);
-            var getCh = ChMAdded(countGold);
+            var getCh = Convert.ToInt32(textBox9.Text.Replace("\u00A0", ""));
             var history = new History()
             {
+                Id = _historyList.Count + 1,
                 Player = player,
                 Date = DateTime.Now,
                 IsBuyGold = true,
@@ -296,6 +308,51 @@ namespace LuffyMoney
 
             this._historyList.Add(history);
             textBox3.Text = string.Empty;
+            textBox9.Text = string.Empty;
+            label15.Text = this.GetLabel15(0);
+
+            this.LoadHistoryGris();
+            this.LoadPlayersInMainGris(_playerList);
+
+            if (comboBox1.Text == comboBox2.Text)
+            {
+                label11.Text = GetLabel11(player.AvailableChm);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var result = comboBox2.Text.ThrowOnCondition(x => x.IsNullOrDefault(), "Введите ник игрока");
+            if (result == null) return;
+
+            result = comboBox2.Text.ThrowOnCondition(x => !_playerList.Select(x => x.Nick.ToLower()).Contains(x.ToLower()), "Указан несуществующий игрок");
+            if (result == null) return;
+
+            result = textBox4.Text.ThrowOnCondition(string.IsNullOrWhiteSpace, "Введите число");
+            if (result == null) return;
+
+            result = textBox4.Text.ThrowOnCondition(text => !int.TryParse(text, out _), "Введите корректное число");
+            if (result == null) return;
+
+            var countChm = Convert.ToInt32(textBox4.Text);
+            var player = _playerList.First(x => x.Nick == comboBox2.Text);
+            var history = new History()
+            {
+                Id = _historyList.Count + 1,
+                Player = player,
+                Date = DateTime.Now,
+                IsBuyGold = false,
+                Count = countChm,
+                GetChM = countChm,
+            };
+
+            player.SpentChM += countChm;
+            player.AvailableChm -= countChm;
+
+            this._historyList.Add(history);
+            textBox4.Text = string.Empty;
+            label11.Text = this.GetLabel11(player.AvailableChm);
+
             this.LoadHistoryGris();
             this.LoadPlayersInMainGris(_playerList);
         }
@@ -320,12 +377,94 @@ namespace LuffyMoney
                 : 0;
 
             textBox9.Text = (gold / CursChm).ToString("N0");
-            label15.Text = $"Можно закупиться на {gold.ToString("N0")} голд";
+            label15.Text = GetLabel15(gold);
         }
 
-        private void textBox9_TextChanged(object sender, EventArgs e)
+        private void textBox9_Enter(object sender, EventArgs e)
         {
-            textBox9.Text = textBox9.Text.Replace(" ", "");
+            textBox9.Text = textBox9.Text.Replace("\u00A0", "");
+        }
+
+        private void textBox9_KeyUp(object sender, KeyEventArgs e)
+        {
+            int value = 0; // Значение по умолчанию (если текстбокс пуст)
+            if (!string.IsNullOrWhiteSpace(textBox9.Text)) // Проверяем, не пуст ли текст
+            {
+                if (int.TryParse(textBox9.Text, out int result)) // Пробуем преобразовать в число
+                {
+                    value = result;
+                }
+            }
+
+            label15.Text = GetLabel15(value * CursChm);
+        }
+
+        private string GetLabel11(int value)
+        {
+            return $"Доступно {value.ToString("N0")}чм";
+        }
+
+        private string GetLabel15(int chm)
+        {
+            return $"Можно закупиться на {chm.ToString("N0")} голд";
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var player = _playerList.FirstOrDefault(x => x.Nick == comboBox2.Text, new Player());
+            label11.Text = GetLabel11(player.AvailableChm);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (dataGridView2.SelectedRows.Count > 0) // Проверяем, выбрана ли строка
+            {
+                DialogResult result = MessageBox.Show("Вы уверены, что хотите удалить выбранную запись?",
+                                                      "Подтверждение удаления",
+                                                      MessageBoxButtons.YesNo,
+                                                      MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes) // Если нажали "Да"
+                {
+                    foreach (DataGridViewRow row in dataGridView2.SelectedRows)
+                    {
+                        int id = Convert.ToInt32(row.Cells[0].Value); // Получаем ID из первой колонки
+
+                        var history = _historyList.FirstOrDefault(x => x.Id == id);
+
+                        var player = _playerList.FirstOrDefault(x => x.Id == history.Player.Id);
+
+                        if (history.IsBuyGold)
+                        {
+
+                            player.BuyGold -= history.Count;
+                            player.AvailableChm -= history.GetChM;
+                        }
+                        else
+                        {
+                            player.SpentChM += history.Count;
+                            player.AvailableChm += history.GetChM;
+                        }
+
+                        // Удаляем из базы данных
+                        // DeleteFromDatabase(id);
+                        _historyList.Remove(history);
+                        dataGridView2.Rows.Remove(row);
+
+                        this.LoadHistoryGris();
+                        this.LoadPlayersInMainGris(_playerList);
+
+                        if (player.Nick == comboBox2.Text)
+                        {
+                            label11.Text = GetLabel11(player.AvailableChm);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите строку для удаления!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }
