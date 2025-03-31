@@ -184,7 +184,7 @@ namespace LuffyMoney
 
             var filteredPlayers = string.IsNullOrEmpty(currentText)
                 ? _playerList
-                : _playerList.Where(p => p.Nick.Contains(currentText)).ToList();
+                : _playerList.Where(p => p.Nick.ToLower().Contains(currentText.ToLower())).ToList();
 
             bindingSource1.DataSource = !filteredPlayers.IsNullOrDefault()
                 ? filteredPlayers
