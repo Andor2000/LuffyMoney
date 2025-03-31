@@ -3,7 +3,7 @@
     public class SettingsEnum
     {
         /// <summary>
-        /// Руб за 1000 голды.
+        /// Руб за 1000 голд.
         /// </summary>
         public static string CursRub = "RUB";
 

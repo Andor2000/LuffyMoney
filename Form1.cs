@@ -85,7 +85,7 @@ namespace LuffyMoney
                 // .ToString("N0"); // "1,000,000"
                 // Заполняем ячейки данных для этой строки
                 dataGridView1.Rows[rowIndex].Cells[0].Value = player.Nick;          // Ник
-                dataGridView1.Rows[rowIndex].Cells[1].Value = player.BuyGold.ToString("N0");         // Куплено голды
+                dataGridView1.Rows[rowIndex].Cells[1].Value = player.BuyGold.ToString("N0");         // Куплено голд
                 dataGridView1.Rows[rowIndex].Cells[2].Value = player.SpentChM.ToString("N0"); ;      // Потрачено чм
                 dataGridView1.Rows[rowIndex].Cells[3].Value = player.AvailableChm.ToString("N0"); ;  // Доступно чм
             }
@@ -191,7 +191,7 @@ namespace LuffyMoney
             cb.DroppedDown = !filteredPlayers.IsNullOrDefault();
         }
 
-        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
@@ -199,7 +199,7 @@ namespace LuffyMoney
             }
         }
 
-        private void textBox3_KeyDown(object sender, KeyEventArgs e)
+        private void textBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.V) // Проверяем Ctrl + V
             {
@@ -300,26 +300,32 @@ namespace LuffyMoney
             this.LoadPlayersInMainGris(_playerList);
         }
 
-        private static int ChMAdded(int valueGold)
+        private static int ChMAdded(int gold)
         {
-            return valueGold / CursChm;
+            return (int)(gold * (gold switch
+            {
+                < 1_000_000 => 0.4,  // До 1кк: 40% от суммы
+                < 2_000_000 => 0.5,  // 1-2кк: 50% от суммы
+                < 4_000_000 => 0.55, // 2-4кк: 55% от суммы
+                < 6_000_000 => 0.6,  // 4-6кк: 60% от суммы
+                < 8_000_000 => 0.65, // 6-8кк: 65% от суммы
+                _ => 0.7             // 8кк и больше: 70% от суммы
+            }));
         }
 
         private void textBox3_KeyUp(object sender, KeyEventArgs e)
         {
-            var text = "Прибавится чм: ";
-            int value;
+            var gold = int.TryParse(textBox3.Text, out int value) && value > 0
+                ? ChMAdded(value)
+                : 0;
 
-            if (int.TryParse(textBox3.Text, out value))
-            {
-                value = ChMAdded(value);
-            }
-            else
-            {
-                value = 0;
-            }
+            textBox9.Text = (gold / CursChm).ToString("N0");
+            label15.Text = $"Можно закупиться на {gold.ToString("N0")} голд";
+        }
 
-            label15.Text = text + value; // Обновляем метку
+        private void textBox9_TextChanged(object sender, EventArgs e)
+        {
+            textBox9.Text = textBox9.Text.Replace(" ", "");
         }
     }
 }
