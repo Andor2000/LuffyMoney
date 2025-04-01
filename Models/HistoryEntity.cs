@@ -1,6 +1,6 @@
 ﻿namespace LuffyMoney.Models
 {
-    public class History
+    public class HistoryEntity
     {
         /// <summary>
         /// Идентификатор.
@@ -33,7 +33,7 @@
         public int Count { get; set; }
 
         /// <summary>
-        /// Приход\расход ЧМ.
+        /// Получено ЧМ.
         /// </summary>
         public int GetChM { get; set; }
     }

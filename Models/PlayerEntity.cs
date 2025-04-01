@@ -3,7 +3,7 @@
     /// <summary>
     /// Игрок.
     /// </summary>
-    public class Player
+    public class PlayerEntity
     {
         /// <summary>
         /// Идентификатор.
